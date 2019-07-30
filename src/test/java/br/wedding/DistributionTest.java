@@ -40,14 +40,14 @@ public class DistributionTest {
     public void twoTables_guestsWithOppositeTags() {
         // given
         Guest[] guests = givenGuests(
-                name("A").tag("family", "groom")
-                , name("B").tag("family", "groom")
-                , name("C").tag("family", "groom")
-                , name("D").tag("family", "groom")
-                , name("E").tag("family", "bride")
-                , name("F").tag("family", "bride")
-                , name("G").tag("family", "bride")
-                , name("H").tag("family", "bride")
+                name("A").tag("inviter", "groom")
+                , name("B").tag("inviter", "groom")
+                , name("C").tag("inviter", "groom")
+                , name("D").tag("inviter", "groom")
+                , name("E").tag("inviter", "bride")
+                , name("F").tag("inviter", "bride")
+                , name("G").tag("inviter", "bride")
+                , name("H").tag("inviter", "bride")
         );
         Table[] tables = givenTables(
                 capacity(4)
@@ -55,24 +55,65 @@ public class DistributionTest {
         );
 
         // when
-        Result result = Distribution.of(guests, tables).sortByTag("family").calculate();
+        Result result = Distribution.of(guests, tables).sortByTag("inviter").calculate();
 
         // then
         assertThat(result.tables[0].count()).isEqualTo(4);
         assertThat(result.tables[1].count()).isEqualTo(4);
 
-        MultiValuedMap<String, String> familyBrideTag = new HashSetValuedHashMap<>();
-        familyBrideTag.put("family", "bride");
-        MultiValuedMap<String, String> familyGroomTag = new HashSetValuedHashMap<>();
-        familyGroomTag.put("family", "groom");
+        MultiValuedMap<String, String> brideTag = new HashSetValuedHashMap<>();
+        brideTag.put("inviter", "bride");
+        MultiValuedMap<String, String> groomTag = new HashSetValuedHashMap<>();
+        groomTag.put("inviter", "groom");
         assertThat(result.tables[0].guests)
                 .isNotEmpty()
                 .allSatisfy(guest ->
-                        assertThat(guest.tags).isEqualTo(familyBrideTag));
+                        assertThat(guest.tags).isEqualTo(brideTag));
         assertThat(result.tables[1].guests)
                 .isNotEmpty()
                 .allSatisfy(guest ->
-                        assertThat(guest.tags).isEqualTo(familyGroomTag));
+                        assertThat(guest.tags).isEqualTo(groomTag));
+    }
+
+    @Test
+    public void distributeFamilies_twoTablesNotFull() {
+        Guest[] guests = givenGuests(
+                name("A").tag("family", "tailor")
+                , name("B").tag("family", "tailor")
+                , name("C").tag("family", "tailor")
+                , name("D").tag("family", "smith")
+                , name("E").tag("family", "smith")
+                , name("F").tag("family", "thatcher")
+                , name("G").tag("family", "thatcher")
+        );
+        Table[] tables = givenTables(
+                capacity(5)
+                , capacity(5)
+        );
+
+        // when
+        Result result = Distribution.of(guests, tables).sortByTag("family").calculate();
+
+        // then
+        assertThat(result.tables[0].count()).isEqualTo(4);
+        assertThat(result.tables[1].count()).isEqualTo(3);
+
+        MultiValuedMap<String, String> smithTag = new HashSetValuedHashMap<>();
+        smithTag.put("family", "smith");
+        MultiValuedMap<String, String> tailorTag = new HashSetValuedHashMap<>();
+        tailorTag.put("family", "tailor");
+        MultiValuedMap<String, String> thatcherTag = new HashSetValuedHashMap<>();
+        thatcherTag.put("family", "thatcher");
+
+        assertThat(result.tables[0].guests)
+                .isNotEmpty()
+                .allSatisfy(guest ->
+                        assertThat(guest.tags).isIn(smithTag, thatcherTag));
+        assertThat(result.tables[1].guests)
+                .isNotEmpty()
+                .doesNotContainNull()
+                .allSatisfy(guest ->
+                        assertThat(guest.tags).isEqualTo(tailorTag));
     }
 
     private static Guest[] givenGuests(GuestBuilder... builders) {
