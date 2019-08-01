@@ -3,7 +3,11 @@ package br.wedding;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -11,16 +15,31 @@ public class BruteForceStrategy implements Distribution.Strategy {
     @Override
     public Stream<Table> calculate(Guest[] guests, Table[] tables) {
         return allCombinations(guests, tables)
-                .max(Comparator.comparing(combo -> Arrays.stream(combo)
-                        .mapToInt(this::calculateScore)
-                        .sum())
-                )
+                .max(Comparator.comparing(this::calculateScore))
                 .map(Arrays::stream)
                 .orElseGet(Stream::empty);
     }
 
+    private int calculateScore(Table[] tables) {
+        return Arrays.stream(tables)
+                .mapToInt(this::calculateScore)
+                .sum();
+    }
+
     private int calculateScore(Table table) {
-        return 1;
+        if(table.guests.length == 0)
+            return table.capacity;
+
+        int emptySpaces = table.capacity - table.guests.length;
+
+        Map<Map.Entry<String, String>, Long> matchingTags = Arrays.stream(table.guests)
+                .flatMap(g -> g.tags.entries().stream())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        return matchingTags.values().stream()
+                .filter(v -> v > 1)
+                .mapToInt(Long::intValue)
+                .sum() - (emptySpaces * emptySpaces);
     }
 
     private Stream<Table[]> allCombinations(Guest[] guests, Table[] tables) {
@@ -43,9 +62,17 @@ public class BruteForceStrategy implements Distribution.Strategy {
                 .map(table -> {
                     int lower = totalCount.getAndAdd(table.capacity);
                     int upper = Math.min(guests.length, totalCount.get());
-                    return new Table(table.capacity, Arrays.copyOfRange(guests, lower, upper));
+                    return new Table(table.capacity, copyOfRange(guests, lower, upper));
                 })
                 .toArray(Table[]::new);
+    }
+
+    private Guest[] copyOfRange(Guest[] guests, int lower, int upper) {
+        return Arrays.stream(guests)
+                .skip(lower)
+                .limit(upper)
+                .filter(Objects::nonNull)
+                .toArray(Guest[]::new);
     }
 
     private static class PermutationsGenerator<T> implements Iterator<T[]> {

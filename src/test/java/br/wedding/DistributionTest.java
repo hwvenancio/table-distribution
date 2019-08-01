@@ -33,6 +33,7 @@ public class DistributionTest {
         Result result = Distribution.calculate(guests, tables);
 
         // then
+        result.print();
         assertThat(result.tables[0].count()).isEqualTo(10);
     }
 
@@ -58,6 +59,7 @@ public class DistributionTest {
         Result result = Distribution.of(guests, tables).sortByTag("inviter").calculate();
 
         // then
+        result.print();
         assertThat(result.tables[0].count()).isEqualTo(4);
         assertThat(result.tables[1].count()).isEqualTo(4);
 
@@ -95,6 +97,7 @@ public class DistributionTest {
         Result result = Distribution.of(guests, tables).sortByTag("family").calculate();
 
         // then
+        result.print();
         assertThat(result.tables[0].count()).isEqualTo(4);
         assertThat(result.tables[1].count()).isEqualTo(3);
 
@@ -139,7 +142,7 @@ public class DistributionTest {
     private static class GuestBuilder {
 
         private String name;
-        private MultiValuedMap<String, String> tags = new HashSetValuedHashMap<>();
+        private final MultiValuedMap<String, String> tags = new HashSetValuedHashMap<>();
 
         public GuestBuilder withName(String name) {
             this.name = name;

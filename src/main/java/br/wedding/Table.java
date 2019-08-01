@@ -14,7 +14,7 @@ public class Table {
         this.guests = guests;
     }
 
-    public int count() {
-        return capacity;
+    public long count() {
+        return guests.length;
     }
 }

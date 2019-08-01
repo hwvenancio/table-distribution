@@ -9,10 +9,6 @@ public class Guest {
     public final String name;
     public final MultiValuedMap<String, String> tags;
 
-    public Guest(String name) {
-        this(name, null);
-    }
-
     public Guest(String name, MultiValuedMap<String, String> tags) {
         this.name = name;
         this.tags = MultiMapUtils.unmodifiableMultiValuedMap(
