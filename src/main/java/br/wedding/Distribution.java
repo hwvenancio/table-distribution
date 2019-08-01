@@ -3,6 +3,7 @@ package br.wedding;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -30,6 +31,7 @@ public class Distribution {
 
     public Distribution sortByTag(String tagName) {
         this.sorter = Comparator.comparing((Table t) -> Arrays.stream(t.guests)
+                .filter(Objects::nonNull)
                 .flatMap(g -> Optional.ofNullable(g.tags.get(tagName))
                         .map(Collection::stream)
                         .orElseGet(Stream::empty)
