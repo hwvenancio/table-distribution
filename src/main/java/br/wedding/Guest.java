@@ -15,4 +15,31 @@ public class Guest {
                 tags == null ? new HashSetValuedHashMap<>() : tags
         );
     }
+
+    public static GuestBuilder builder() {
+        return new GuestBuilder();
+    }
+
+    public static class GuestBuilder {
+
+        private String name;
+        private final MultiValuedMap<String, String> tags = new HashSetValuedHashMap<>();
+
+        private GuestBuilder() { }
+
+        public GuestBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public GuestBuilder tag(String name, String value) {
+            this.tags.put(name, value);
+            return this;
+        }
+
+        public Guest build() {
+            return new Guest(name, tags);
+        }
+    }
+
 }

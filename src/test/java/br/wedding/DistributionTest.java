@@ -4,8 +4,10 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.junit.Test;
 
-import java.util.Arrays;
-
+import static br.wedding.TestUtils.capacity;
+import static br.wedding.TestUtils.givenGuests;
+import static br.wedding.TestUtils.givenTables;
+import static br.wedding.TestUtils.name;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DistributionTest {
@@ -119,57 +121,4 @@ public class DistributionTest {
                         assertThat(guest.tags).isEqualTo(tailorTag));
     }
 
-    private static Guest[] givenGuests(GuestBuilder... builders) {
-        return Arrays.stream(builders)
-                .map(GuestBuilder::builder)
-                .toArray(Guest[]::new);
-    }
-
-    private static Table[] givenTables(TableBuilder... builders) {
-        return Arrays.stream(builders)
-                .map(TableBuilder::build)
-                .toArray(Table[]::new);
-    }
-
-    static GuestBuilder name(String name) {
-        return new GuestBuilder().withName(name);
-    }
-
-    static TableBuilder capacity(int capacity) {
-        return new TableBuilder().withCapacity(capacity);
-    }
-
-    private static class GuestBuilder {
-
-        private String name;
-        private final MultiValuedMap<String, String> tags = new HashSetValuedHashMap<>();
-
-        public GuestBuilder withName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public GuestBuilder tag(String name, String value) {
-            this.tags.put(name, value);
-            return this;
-        }
-
-        public Guest builder() {
-            return new Guest(name, tags);
-        }
-    }
-
-    private static class TableBuilder {
-
-        private int capacity;
-
-        public TableBuilder withCapacity(int capacity) {
-            this.capacity = capacity;
-            return this;
-        }
-
-        public Table build() {
-            return new Table(capacity);
-        }
-    }
 }
