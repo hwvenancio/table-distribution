@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -57,8 +59,10 @@ public abstract class BaseBruteForceStrategy implements Distribution.Strategy {
 
         int max = Math.max(guests.length, totalSpaces);
 
-        Iterable<Guest[]> iterable = () -> permutationGenerator.apply(Arrays.copyOf(guests, max), tables);
-        return StreamSupport.stream(iterable.spliterator(), false)
+        Spliterator<Guest[]> spliterator = Spliterators.spliteratorUnknownSize(
+                permutationGenerator.apply(Arrays.copyOf(guests, max), tables)
+                , 0);
+        return StreamSupport.stream(spliterator, false)
                 .map(permuted -> oneCombination(permuted, tables));
     }
 
