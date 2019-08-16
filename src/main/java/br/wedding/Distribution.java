@@ -17,7 +17,7 @@ public class Distribution {
     public Distribution(Guest[] guests, Table[] tables) {
         this.guests = guests;
         this.tables = tables;
-        strategy = new BruteForceStrategy();
+        strategy = new LessBruteForceStrategy();
         sorter = Comparator.comparing(Table::count);
     }
 

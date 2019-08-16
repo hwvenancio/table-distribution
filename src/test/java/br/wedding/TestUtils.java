@@ -1,6 +1,10 @@
 package br.wedding;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class TestUtils {
 
@@ -24,4 +28,9 @@ public class TestUtils {
         return Table.builder().withCapacity(capacity);
     }
 
+    static <T> Stream<T> stream(Iterator<T> iterator) {
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(iterator, 0)
+                , false);
+    }
 }
