@@ -3,7 +3,7 @@ package br.wedding;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static br.wedding.Utils.factorial;
+import static br.wedding.Utils.factorialInt;
 import static br.wedding.Utils.swap;
 
 public class PermutationsGenerator {
@@ -25,7 +25,7 @@ public class PermutationsGenerator {
             this.n = elements.length;
             indices = new int[n];
             this.elements = elements;
-            permutations = factorial(n);
+            permutations = factorialInt(n);
             count = 0;
         }
 

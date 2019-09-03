@@ -68,6 +68,7 @@ public class CombinationsGenerator {
         private final T[] output;
         private final Iterator<List<Integer>> iterator;
         private final int[] temp;
+        private long count;
 
         public GroupedCombinationsGenerator(T[] elements, int[] buckets) {
             this.elements = elements;
@@ -84,6 +85,7 @@ public class CombinationsGenerator {
                     .simple()
                     .iterator();
 
+            count = 0;
         }
 
         @Override
@@ -105,6 +107,8 @@ public class CombinationsGenerator {
                 int space = temp[group]++;
                 output[space] = elements[i];
             }
+            if((++count) % 1000000 == 0)
+                System.out.println(String.format("%d combinations computed", count));
             return output;
         }
 
