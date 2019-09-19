@@ -11,7 +11,7 @@ public class Distribution {
 
     private final Guest[] guests;
     private final Table[] tables;
-    private final Strategy strategy;
+    private Strategy strategy;
     private Comparator<Table> sorter;
 
     public Distribution(Guest[] guests, Table[] tables) {
@@ -40,6 +40,11 @@ public class Distribution {
                 .findFirst()
                 .orElse("")
         );
+        return this;
+    }
+
+    public Distribution withStrategy(Strategy strategy) {
+        this.strategy = strategy;
         return this;
     }
 

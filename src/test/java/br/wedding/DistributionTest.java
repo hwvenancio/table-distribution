@@ -4,6 +4,8 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static br.wedding.TestUtils.capacity;
 import static br.wedding.TestUtils.givenGuests;
 import static br.wedding.TestUtils.givenTables;
@@ -119,6 +121,34 @@ public class DistributionTest {
                 .doesNotContainNull()
                 .allSatisfy(guest ->
                         assertThat(guest.tags).isEqualTo(tailorTag));
+    }
+
+    @Test
+    public void testJeneticsStrategy() {
+        Guest[] guests = givenGuests(
+                name("A").tag("family", "tailor")
+                , name("B").tag("family", "tailor")
+                , name("C").tag("family", "tailor")
+                , name("D").tag("family", "smith")
+                , name("E").tag("family", "smith")
+                , name("F").tag("family", "thatcher")
+                , name("G").tag("family", "thatcher")
+        );
+        Table[] tables = givenTables(
+                capacity(5)
+                , capacity(5)
+        );
+
+        // when
+        Result result = Distribution.of(guests, tables)
+                .withStrategy(new JeneticsStrategy(10000))
+                .sortByTag("family")
+                .calculate();
+
+        // then
+        result.print();
+        assertThat(Arrays.stream(result.tables).flatMap(t -> Arrays.stream(t.guests)))
+                .containsExactlyInAnyOrder(guests);
     }
 
 }
